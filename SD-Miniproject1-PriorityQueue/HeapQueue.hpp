@@ -1,6 +1,5 @@
 #pragma once
 #include "PriorityQueue.hpp"
-#include <stdexcept>
 
 template <typename T>
 class HeapQueue : public PriorityQueue<T> {

@@ -127,9 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HeapQueue.cpp" />
+    <ClCompile Include="LinkedListQueue.cpp" />
     <ClCompile Include="SD-Miniproject1-PriorityQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HeapQueue.hpp" />
+    <ClInclude Include="LinkedListQueue.hpp" />
     <ClInclude Include="PriorityQueue.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

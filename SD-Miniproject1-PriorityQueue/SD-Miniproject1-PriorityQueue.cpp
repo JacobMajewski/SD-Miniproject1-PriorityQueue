@@ -2,7 +2,8 @@
 //
 
 #include <iostream>
-
+#include "HeapQueue.hpp"
+#include "LinkedListQueue.hpp"
 int main()
 {
     std::cout << "Hello World!\n";
