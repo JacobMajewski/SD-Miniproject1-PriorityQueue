@@ -1,1 +1,1 @@
-# SD-Miniproject1-PriorityQueue
+# SD-Miniproject2-PriorityQueue
