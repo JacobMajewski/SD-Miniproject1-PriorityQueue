@@ -9,18 +9,18 @@ private:
         int priority;
     };
 
-    Node* heap; //wsk na tab
-    int capacity; //pojemnosc
-    int count; //liczba elementow
+    Node* heap;    //wskaznik na tabele dynamiczn¹
+    int capacity; // pojemnoœæ tablicy
+    int count;   //  liczba elementów w tablicy
 
     void heapifyUp(int index);
     void heapifyDown(int index);
     void resize();
     int findIndex(const T& element) const;
-    void swapNodes(Node& a, Node& b);//do zamiany elementow, bo nie chcialem uzywac std swap
+    void swapNodes(Node& a, Node& b); //do zamiany elementow, bo nie chcialem uzywac std swap // ok :)
 
 public:
-    HeapQueue(int initialCapacity = 16);
+    HeapQueue(int initialCapacity = 16); // i wont question that
     ~HeapQueue();
 
     void insert(const T& element, int priority) override;
