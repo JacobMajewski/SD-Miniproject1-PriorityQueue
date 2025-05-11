@@ -12,6 +12,7 @@ private:
     };
 
     Node* head;
+    Node* tail;
     int count; //size
     void clear();
 

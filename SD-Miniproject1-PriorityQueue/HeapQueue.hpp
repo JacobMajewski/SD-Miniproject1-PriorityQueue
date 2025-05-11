@@ -22,10 +22,12 @@ private:
 public:
     HeapQueue(int initialCapacity = 16); // i wont question that
     ~HeapQueue();
-
+    //interface implementation
     void insert(const T& element, int priority) override;
     T extractMax() override;
     T peekMax() const override;
     void modifyKey(const T& element, int newPriority) override;
     int size() const override;
+    //helper
+    void fastBuilder(T* element, int* priority);
 };

@@ -7,11 +7,11 @@
 #include "LinkedListQueue.cpp"
 
 template <typename QueueType>
-long long measureOperation(QueueType& queue, const std::string& operation) {
+long long measureOperation(QueueType& queue, const std::string& operation, int element, int priority) {
     auto start = std::chrono::high_resolution_clock::now();
 
     if (operation == "insert") {
-        queue.insert(42, 100);
+        queue.insert(element, priority);
     }
     else if (operation == "extract-max") {
         queue.extractMax();
@@ -20,7 +20,7 @@ long long measureOperation(QueueType& queue, const std::string& operation) {
         queue.peekMax();
     }
     else if (operation == "modify-key") {
-        queue.modifyKey(42, 200);
+        queue.modifyKey(element, priority);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -28,21 +28,31 @@ long long measureOperation(QueueType& queue, const std::string& operation) {
 }
 
 template <typename QueueType>
-void prepareQueue(QueueType& queue, int size, int prioritySeed, int contentSeed) {
-    std::mt19937 genP(prioritySeed);
-    std::mt19937 genC(contentSeed);
+void prepareQueue(QueueType& queue, int size, std::mt19937 genP, std::mt19937 genC) {
     std::uniform_int_distribution<int> distToFill(0, size * 1000);
     for (int i = 0; i < size; i++) {
         queue.insert(distToFill(genC), distToFill(genP));
     }
 }
+template <typename T>
+void prepareQueue(HeapQueue<T>& queue, int size, std::mt19937 genP, std::mt19937 genC) {
+    std::uniform_int_distribution<int> distToFill(0, size * 1000);
+    T* elements = new T[size];
+    int* priorities = new int[size];
+    for (int i = 0; i < size; i++) {
+        elements[i] = distToFill(genC);
+        priorities[i] = distToFill(genP);
+    }
+        queue.fastBuilder(elements, priorities);
+    delete[] elements;
+    delete[] priorities;
+}
 
 int main() {
     const std::string OPERATIONS[] = { "insert", "extract-max", "peek", "modify-key" };
-    const int SIZES[] = { 500000};
-    //const int SIZES[] = { 5000, 10000, 20000, 50000, 100000, 200000, 500000 };
+    const int SIZES[] = { 5000, 8000, 10000, 16000, 20000, 40000, 60000, 100000 };
 
-    const int NUM_SEEDS = 100;
+    const int NUM_SEEDS = 25;
     const int BASE_SEED = 14052003;
 
     int PRIORITY_SEEDS[NUM_SEEDS];
@@ -67,14 +77,17 @@ int main() {
             long long listSum = 0;
 
             for (int seedIdx = 0; seedIdx < NUM_SEEDS; seedIdx++) {
+                std::mt19937 genP(PRIORITY_SEEDS[seedIdx]);
+                std::mt19937 genC(CONTENT_SEEDS[seedIdx]);
                 HeapQueue<int> heap(size);
                 LinkedListQueue<int> list;
 
-                prepareQueue(heap, size, PRIORITY_SEEDS[seedIdx], CONTENT_SEEDS[seedIdx]);
-                prepareQueue(list, size, PRIORITY_SEEDS[seedIdx], CONTENT_SEEDS[seedIdx]);
-
-                heapSum += measureOperation(heap, operation);
-                listSum += measureOperation(list, operation);
+                prepareQueue(heap, size, genP, genC);
+                prepareQueue(list, size, genP, genC);
+                int newElement = dist(genC);
+                int newPriority = dist(genP);
+                heapSum += measureOperation(heap, operation, newElement, newPriority);
+                listSum += measureOperation(list, operation, newElement, newPriority);
             }
 
             heapFile << size << "," << operation << "," << (heapSum / NUM_SEEDS) << "\n";

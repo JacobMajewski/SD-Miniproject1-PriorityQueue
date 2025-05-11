@@ -2,20 +2,28 @@
 #include <stdexcept>
 
 template <typename T>
-LinkedListQueue<T>::LinkedListQueue() : head(nullptr), count(0) {}
+LinkedListQueue<T>::LinkedListQueue() : head(nullptr), tail(nullptr), count(0) {}
+
 
 template <typename T>
 LinkedListQueue<T>::~LinkedListQueue() {
     clear();
 }
-
+// same priority -> FIFO
 template <typename T>
 void LinkedListQueue<T>::insert(const T& element, int priority) {
     Node* newNode = new Node(element, priority);
 
+    // Jeœli lista jest pusta lub nowy ma wiêkszy priorytet ni¿ head
     if (!head || priority > head->priority) {
         newNode->next = head;
         head = newNode;
+        if (!tail) tail = newNode; // pierwszy element
+    }
+    // Jeœli nowy element ma najni¿szy priorytet (czyli idzie na koniec)
+    else if (!head->next || priority <= tail->priority) {
+        tail->next = newNode;
+        tail = newNode;
     }
     else {
         Node* current = head;
@@ -24,6 +32,7 @@ void LinkedListQueue<T>::insert(const T& element, int priority) {
         }
         newNode->next = current->next;
         current->next = newNode;
+        if (!newNode->next) tail = newNode; // aktualizacja tail jeœli na koñcu
     }
 
     ++count;
@@ -38,6 +47,8 @@ T LinkedListQueue<T>::extractMax() {
     head = head->next;
     delete temp;
     --count;
+
+    if (!head) tail = nullptr; // jeœli usunêliœmy ostatni element
 
     return result;
 }
@@ -54,23 +65,24 @@ void LinkedListQueue<T>::modifyKey(const T& element, int newPriority) {
     Node* prev = nullptr;
     Node* current = head;
 
-    //znalezienie pasuj¹cego wez³u
+    // Znalezienie pasuj¹cego wêz³a
     while (current && !(current->element == element)) {
         prev = current;
         current = current->next;
     }
 
-    if (!current) return; // wyjœcie w przypadku braku matchu
+    if (!current) return; // element nie znaleziony
 
-    //usuwanie wêz³a
+    // Usuniêcie elementu
     if (prev) prev->next = current->next;
     else head = current->next;
+
+    if (!current->next) tail = prev;
     delete current;
     --count;
 
-    //dodanie z nowym priorytetem
+    // Dodanie z nowym priorytetem
     insert(element, newPriority);
-
 }
 
 template <typename T>
@@ -85,5 +97,6 @@ void LinkedListQueue<T>::clear() {
         head = head->next;
         delete temp;
     }
+    head = tail = nullptr;
     count = 0;
 }

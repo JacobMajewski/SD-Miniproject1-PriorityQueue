@@ -5,10 +5,12 @@ HeapQueue<T>::HeapQueue(int initialCapacity) : capacity(initialCapacity), count(
     heap = new Node[capacity];
 }
 
+
 template <typename T>
 HeapQueue<T>::~HeapQueue() {
-    delete[] heap;
+        delete[] heap;
 }
+
 
 template <typename T>
 void HeapQueue<T>::resize() {
@@ -111,4 +113,12 @@ void HeapQueue<T>::modifyKey(const T& element, int newPriority) {
 template <typename T>
 int HeapQueue<T>::size() const {
     return count;
+}
+template <typename T>
+void HeapQueue<T>::fastBuilder(T* elements, int* priorities) {
+    for (int i = 0; i < capacity; i++)
+        heap[i] = Node{ elements[i], priorities[i] };
+    count = capacity;
+    for (int i = (capacity / 2) - 1; i >= 0; --i) 
+        heapifyDown(i);
 }
