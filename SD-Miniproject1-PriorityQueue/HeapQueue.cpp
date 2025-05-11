@@ -99,7 +99,7 @@ T HeapQueue<T>::peekMax() const {
 template <typename T>
 void HeapQueue<T>::modifyKey(const T& element, int newPriority) {
     int index = findIndex(element);
-    if (index == -1) throw std::invalid_argument("Element not found in HeapQueue");
+    if (index == -1) return;
     
     int oldPriority = heap[index].priority;
     heap[index].priority = newPriority;
