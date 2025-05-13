@@ -1,25 +1,24 @@
 #include "HeapQueue.hpp"
-
+#include <stdexcept>
 template <typename T>
-HeapQueue<T>::HeapQueue(int initialCapacity)
-    : capacity(initialCapacity), count(0)
-{
+HeapQueue<T>::HeapQueue(int initialCapacity) : capacity(initialCapacity), count(0) {
     heap = new Node[capacity];
 }
 
+
 template <typename T>
 HeapQueue<T>::~HeapQueue() {
-    delete[] heap;
+        delete[] heap;
 }
+
 
 template <typename T>
 void HeapQueue<T>::resize() {
     capacity *= 2;
     Node* newHeap = new Node[capacity];
-    for (int i = 0; i < count; ++i) 
-    {
+
+    for (int i = 0; i < count; i++) 
         newHeap[i] = heap[i];
-    }
 
     delete[] heap;
     heap = newHeap;
@@ -37,8 +36,7 @@ void HeapQueue<T>::heapifyUp(int index) {
     while (index > 0) {
 
         int parent = (index - 1) / 2;
-        if (heap[index].priority <= heap[parent].priority)
-            break;
+        if (heap[index].priority <= heap[parent].priority) break;
 
         swapNodes(heap[index], heap[parent]);
         index = parent;
@@ -49,13 +47,13 @@ template <typename T>
 void HeapQueue<T>::heapifyDown(int index) {
     int left, right, largest;
     while (true) {
+
         left = 2 * index + 1;
         right = 2 * index + 2;
         largest = index;
 
         if (left < count && heap[left].priority > heap[largest].priority) largest = left;
         if (right < count && heap[right].priority > heap[largest].priority) largest = right;
-
         if (largest == index) break;
 
         swapNodes(heap[index], heap[largest]);
@@ -65,17 +63,16 @@ void HeapQueue<T>::heapifyDown(int index) {
 
 template <typename T>
 int HeapQueue<T>::findIndex(const T& element) const {
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) 
         if (heap[i].element == element) return i;
-    }
+    
     return -1;
 }
 
 template <typename T>
 void HeapQueue<T>::insert(const T& element, int priority) {
-    if (count == capacity) {
-        resize();
-    }
+    if (count == capacity) resize();
+
     heap[count] = Node{ element, priority };
     heapifyUp(count);
     ++count;
@@ -83,43 +80,45 @@ void HeapQueue<T>::insert(const T& element, int priority) {
 
 template <typename T>
 T HeapQueue<T>::extractMax() {
-    if (count == 0) {
-        throw std::out_of_range("HeapQueue is empty");
-    }
+    if (count == 0) throw std::out_of_range("HeapQueue is empty");
+    
     T maxElem = heap[0].element;
     heap[0] = heap[count - 1];
     --count;
-    if (count > 0) {
-        heapifyDown(0);
-    }
+
+    if (count > 0) heapifyDown(0);
+    
     return maxElem;
 }
 
 template <typename T>
 T HeapQueue<T>::peekMax() const {
-    if (count == 0) {
-        throw std::out_of_range("HeapQueue is empty");
-    }
+    if (count == 0) throw std::out_of_range("HeapQueue is empty");
+    
     return heap[0].element;
 }
 
 template <typename T>
 void HeapQueue<T>::modifyKey(const T& element, int newPriority) {
     int index = findIndex(element);
-    if (index == -1) {
-        throw std::invalid_argument("Element not found in HeapQueue");
-    }
+    if (index == -1) return;
+    
     int oldPriority = heap[index].priority;
     heap[index].priority = newPriority;
-    if (newPriority > oldPriority) {
-        heapifyUp(index);
-    }
-    else if (newPriority < oldPriority) {
-        heapifyDown(index);
-    }
+
+    if      (newPriority > oldPriority) heapifyUp(index);
+    else if (newPriority < oldPriority) heapifyDown(index);
 }
 
 template <typename T>
 int HeapQueue<T>::size() const {
     return count;
+}
+template <typename T>
+void HeapQueue<T>::fastBuilder(T* elements, int* priorities) {
+    for (int i = 0; i < capacity; i++)
+        heap[i] = Node{ elements[i], priorities[i] };
+    count = capacity;
+    for (int i = (capacity / 2) - 1; i >= 0; --i) 
+        heapifyDown(i);
 }

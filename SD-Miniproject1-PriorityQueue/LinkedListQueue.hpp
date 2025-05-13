@@ -12,20 +12,17 @@ private:
     };
 
     Node* head;
-    int count;
+    Node* tail;
+    int count; //size
+    void clear();
 
 public:
     LinkedListQueue();
     ~LinkedListQueue();
 
+    void insert(const T& element, int priority) override;
     T extractMax() override;
     T peekMax() const override;
-
-    void insert(const T& element, int priority) override;
     void modifyKey(const T& element, int newPriority) override;
-
     int size() const override;
-
-private:
-    void clear();
 };
