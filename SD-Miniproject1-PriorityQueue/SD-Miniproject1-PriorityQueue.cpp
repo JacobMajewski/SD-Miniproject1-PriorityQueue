@@ -135,7 +135,7 @@ int main() {
     std::string queueType;
 
     if (choice == 1) {
-        queue = new HeapQueue<int>(1000);
+        queue = new HeapQueue<int>();
         queueType = "HeapQueue";
     }
     else {
