@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <Windows.h>
 #include "HeapQueue.cpp"
 #include "LinkedListQueue.cpp"
 
@@ -48,10 +49,9 @@ void prepareQueue(HeapQueue<T>& queue, int size, std::mt19937 genP, std::mt19937
     delete[] priorities;
 }
 
-int main() {
+void benchamarks() {
     const std::string OPERATIONS[] = { "insert", "extract-max", "peek", "modify-key" };
     const int SIZES[] = { 5000, 8000, 10000, 16000, 20000, 40000, 60000, 100000 };
-
     const int NUM_SEEDS = 25;
     const int BASE_SEED = 14052003;
 
@@ -99,4 +99,108 @@ int main() {
     listFile.close();
 
     std::cout << "Dane zapisane do HeapQueue.csv i LinkedListQueue.csv\n";
+}
+
+int main() {
+    int choice = 0;
+
+    while (choice != 1 && choice != 2) {
+        std::cout << "Wybierz tryb dzialania:\n";
+        std::cout << "(1) Tryb interaktywny (menu uzytkownika)\n";
+        std::cout << "(2) Tryb badan (benchmark)\n";
+        std::cin >> choice;
+
+        if (choice != 1 && choice != 2)
+            std::cout << "Nieprawidlowy wybor. Sprobuj ponownie.\n";
+    }
+
+    if (choice == 2) {
+        benchamarks();
+        return 0;
+    }
+
+    // Tryb interaktywny
+    choice = 0;
+    while (choice != 1 && choice != 2) {
+        std::cout << "\nWybierz strukture:\n";
+        std::cout << "(1) Kolejka na kopcu (HeapQueue)\n";
+        std::cout << "(2) Kolejka na liscie jednokierunkowej (LinkedListQueue)\n";
+        std::cin >> choice;
+
+        if (choice != 1 && choice != 2)
+            std::cout << "Nieprawidlowy wybor. Sprobuj ponownie.\n";
+    }
+
+    PriorityQueue<int>* queue = nullptr;
+    std::string queueType;
+
+    if (choice == 1) {
+        queue = new HeapQueue<int>(1000);
+        queueType = "HeapQueue";
+    }
+    else {
+        queue = new LinkedListQueue<int>();
+        queueType = "LinkedListQueue";
+    }
+
+    int element, priority;
+
+    while (true) {
+        system("cls");
+        std::cout << "--- MENU OPERACJI ---\n";
+        std::cout << "Typ kolejki: " << queueType << "\n";
+        std::cout << "Rozmiar kolejki: " << queue->size() << "\n\n";
+
+        std::cout << "(1) insert (element, priorytet)\n";
+        std::cout << "(2) extract-max\n";
+        std::cout << "(3) peek-max\n";
+        std::cout << "(4) modify-key (element, nowy priorytet)\n";
+        std::cout << "(5) wyjscie\n";
+        std::cout << "Wybierz operacje: ";
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1:
+            std::cout << "Podaj element: ";
+            std::cin >> element;
+            std::cout << "Podaj priorytet: ";
+            std::cin >> priority;
+            queue->insert(element, priority);
+            break;
+
+        case 2:
+            if (queue->size())
+                std::cout << "Usunieto: " << queue->extractMax() << "\n";
+            else
+                std::cout << "Kolejka jest pusta\n";
+            break;
+
+        case 3:
+            if (queue->size())
+                std::cout << "Maksymalny: " << queue->peekMax() << "\n";
+            else
+                std::cout << "Kolejka jest pusta\n";
+            break;
+
+        case 4:
+            std::cout << "Podaj element: ";
+            std::cin >> element;
+            std::cout << "Podaj nowy priorytet: ";
+            std::cin >> priority;
+            queue->modifyKey(element, priority);
+            break;
+
+        case 5:
+            std::cout << "Zamykanie programu...\n";
+            delete queue;
+            return 0;
+
+        default:
+            std::cout << "Nieznana opcja, sprobuj ponownie.\n";
+        }
+
+        std::cout << "\nNacisnij enter aby kontynuowac...";
+        std::cin.ignore();
+        std::cin.get();
+    }
 }
